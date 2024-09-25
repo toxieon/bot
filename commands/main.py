@@ -19,14 +19,15 @@ async def load_commands():
     await bot.load_extension('commands.role')
     await bot.load_extension('commands.exportPFPs')
     await bot.load_extension('commands.write_contest')
+    await bot.load_extension('commands.timezone')
 
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
     await load_commands()
 
-# Custom Help/Commands command to show all available commands dynamically
-@bot.command(name="Commands", aliases=["Command", "Help"])
+# Custom Thelp command to show all available commands dynamically
+@bot.command(name="Thelp")  # Only respond to !Thelp
 async def commands_list(ctx):
     """Shows all available commands dynamically."""
     command_list = [command.name for command in bot.commands]

@@ -13,11 +13,13 @@ ZIP_FILE = "pfps_export.zip"
 if not os.path.exists(PFP_DIRECTORY):
     os.makedirs(PFP_DIRECTORY)
 
-# Define the exportPFPs command
-async def setup(bot):
-    @bot.command(name="exportPFPs")
+class ExportPFPs(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name="exportPFPs")
     @commands.has_permissions(administrator=True)
-    async def export_pfps(ctx):
+    async def export_pfps(self, ctx):
         """Exports profile pictures of all users in the server and provides a zip file for download."""
         await ctx.send("Exporting profile pictures...")
 
@@ -55,3 +57,7 @@ async def setup(bot):
         # Clean up
         shutil.rmtree(PFP_DIRECTORY)
         os.remove(ZIP_FILE)
+
+# Setup function to properly add the cog
+async def setup(bot):
+    await bot.add_cog(ExportPFPs(bot))
