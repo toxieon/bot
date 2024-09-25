@@ -1,19 +1,3 @@
-import discord
-from discord.ext import commands
-
-COLOR_OPTIONS = {
-    '🟥': ('red', discord.Color.red()),
-    '🟦': ('blue', discord.Color.blue()),
-    '🟩': ('green', discord.Color.green()),
-    '🟨': ('yellow', discord.Color.gold()),
-    '🟧': ('orange', discord.Color.orange()),
-    '🟪': ('purple', discord.Color.purple()),
-    '⬜': ('white', discord.Color.lighter_grey()),
-    '⬛': ('black', discord.Color.default())
-}
-
-
-# Define the Role command
 async def setup(bot):
     @bot.command(name="Role")
     async def create_role(ctx):
@@ -53,9 +37,9 @@ async def setup(bot):
 
         selected_color_name, selected_color = COLOR_OPTIONS[str(reaction.emoji)]
 
-        # Step 3: Confirmation message
-        confirmation = await ctx.send(
-            f"Got it! New role **{role_name}** with color **{selected_color_name}**. Does this look correct?")
+        # Step 3: Confirmation message with cleaner formatting
+        confirmation = await ctx.send(f"Got it! New role **{role_name}** with color **{selected_color_name}**.\n" +
+                                      "Does this look correct? React with ✅ to confirm or ❌ to cancel.")
         await confirmation.add_reaction('✅')
         await confirmation.add_reaction('❌')
 
@@ -71,6 +55,6 @@ async def setup(bot):
         if str(reaction.emoji) == '✅':
             # Create the role with the selected name and color
             await ctx.guild.create_role(name=role_name, color=selected_color)
-            await ctx.send(f'Role "{role_name}" with color {selected_color_name} has been created!')
+            await ctx.send(f'Role "{role_name}" with color **{selected_color_name}** has been created!')
         else:
             await ctx.send("Role creation canceled.")
