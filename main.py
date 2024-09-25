@@ -21,7 +21,6 @@ async def load_commands():
     await bot.load_extension('commands.write_contest')
     await bot.load_extension('commands.timezone')
 
-
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')

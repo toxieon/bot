@@ -56,7 +56,11 @@ class RoleCreator(commands.Cog):
 
         # Add all reactions at once
         emojis = list(INITIAL_COLOR_OPTIONS.keys())
-        await color_prompt.add_reactions(emojis)
+        try:
+            await color_prompt.add_reactions(emojis)
+        except discord.Forbidden:
+            await ctx.send("Error: The bot doesn't have permission to add reactions in this channel.")
+            return
 
         def reaction_check(reaction, user):
             return user == ctx.author and str(reaction.emoji) in INITIAL_COLOR_OPTIONS
