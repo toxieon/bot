@@ -1,31 +1,39 @@
 import discord
 from discord.ext import commands
 import os
-import aiohttp
+import webserver
 
-# Directory to save profile pictures
-PFP_DIRECTORY = "exported_pfps"
+DISCORD_TOKEN = os.environ.get('discordkey')
 
-# Ensure the directory exists
-if not os.path.exists(PFP_DIRECTORY):
-    os.makedirs(PFP_DIRECTORY)
+# Configure bot intents
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True  # Important: Enable this for handling commands
 
-# Define the exportPFPs command
-async def setup(bot):
-    @bot.command(name="exportPFPs")
-    @commands.has_permissions(administrator=True)
-    async def export_pfps(ctx):
-        """Exports profile pictures of all users in the server."""
-        await ctx.send("Exporting profile pictures...")
+# Initialize the bot and make it case-insensitive
+bot = commands.Bot(command_prefix='!', intents=intents, case_insensitive=True)
 
-        async with aiohttp.ClientSession() as session:
-            for member in ctx.guild.members:
-                avatar_url = member.avatar.url if member.avatar else member.default_avatar.url
-                async with session.get(avatar_url) as resp:
-                    if resp.status == 200:
-                        pfp_data = await resp.read()
-                        file_name = f"{PFP_DIRECTORY}/{member.name}_{member.id}.png"
-                        with open(file_name, 'wb') as file:
-                            file.write(pfp_data)
+# Load commands from external files
+async def load_commands():
+    await bot.load_extension('commands.ping')
+    await bot.load_extension('commands.role')
+    await bot.load_extension('commands.exportPFPs')
 
-        await ctx.send(f"Profile pictures exported to the `{PFP_DIRECTORY}` folder!")
+@bot.event
+async def on_ready():
+    print(f'{bot.user} has connected to Discord!')
+    await load_commands()
+
+# Custom Help/Commands command to show all available commands dynamically
+@bot.command(name="Commands", aliases=["Command", "Help"])
+async def commands_list(ctx):
+    """Shows all available commands dynamically."""
+    command_list = [command.name for command in bot.commands]
+    commands_str = "\n".join([f"• {cmd}" for cmd in command_list])
+    await ctx.send(f"Here are all available commands:\n{commands_str}")
+
+# Keep the bot alive using a web server
+webserver.keep_alive()
+
+# Run the bot
+bot.run(DISCORD_TOKEN)
