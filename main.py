@@ -3,15 +3,18 @@ from discord.ext import commands
 import os
 import webserver
 
-# Load the bot token from environment variables.
-# You'll need to set this variable before running the bot.
-# On Windows: `set discordkey=YOUR_BOT_TOKEN`
-# On macOS/Linux: `export discordkey=YOUR_BOT_TOKEN`
+# Load the bot token from environment variables
+# Make sure to set this variable before running the bot:
+# Windows: `set discordkey=YOUR_BOT_TOKEN`
+# macOS/Linux: `export discordkey=YOUR_BOT_TOKEN`
 DISCORD_TOKEN = os.environ.get('discordkey')
 
-# Initialize bot with message content intent
-intents = discord.Intents.default()
-intents.message_content = True
+# Configure bot intents
+# If you need privileged intents (e.g., members and presences), make sure they are enabled in the Developer Portal.
+intents = discord.Intents.default()  # Default intents
+intents.members = True  # Enable members intent if you need access to guild member updates
+intents.presences = False  # Disable presence intent if you don't need to track users' online statuses
+
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 # Dictionary of common color names to RGB tuples
@@ -38,16 +41,12 @@ async def create_role(ctx):
 
     # Wait for user's response
     role_name_msg = await bot.wait_for('message', check=lambda message: message.author == ctx.author)
-
     role_name = role_name_msg.content.strip()  # Get the role name
 
     # Step 2: Ask for role color
     await ctx.send(f"What color would you like {role_name} to be? (e.g., red, blue, green, etc.)")
-
-    # Wait for user's response
     role_color_msg = await bot.wait_for('message', check=lambda message: message.author == ctx.author)
-
-    role_color_input = role_color_msg.content.strip().lower()  # Get the color name and normalize to lowercase
+    role_color_input = role_color_msg.content.strip().lower()  # Get the color name
 
     # Step 3: Find the closest color match from the dictionary
     role_color = COLOR_DICT.get(role_color_input, discord.Color.default())
@@ -65,7 +64,7 @@ async def create_role(ctx):
 
     try:
         reaction, _ = await bot.wait_for('reaction_add', timeout=30.0, check=check_reaction)
-    except TimeoutError:
+    except asyncio.TimeoutError:
         await ctx.send("You took too long to respond! Please try again.")
         return
 
@@ -79,6 +78,8 @@ async def create_role(ctx):
         await ctx.send("Role creation canceled.")
 
 
-# Run the bot
+# Keep the bot alive using a web server
 webserver.keep_alive()
+
+# Run the bot
 bot.run(DISCORD_TOKEN)
