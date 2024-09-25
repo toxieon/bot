@@ -36,16 +36,28 @@ class TimeZoneManager(commands.Cog):
             self.save_timezones()
             await ctx.send(f"Timezone for {ctx.author.name} set to {timezone}.")
         except pytz.UnknownTimeZoneError:
-            await ctx.send(f"Invalid timezone: {timezone}. Please provide a valid timezone from the IANA timezone database.")
+            await ctx.send(f"Invalid timezone: {timezone}. Please provide a valid timezone.")
 
     # Command to get the time for a specific player
     @commands.command(name="Time")
-    async def get_time(self, ctx, player: str):
+    async def get_time(self, ctx, *, player: str = None):
         """Fetches the current time for a player based on their set timezone."""
+        if player.startswith("<@"):  # Check if the input is a mention
+            # Extract the user ID from the mention
+            user_id = int(player[2:-1].replace("!", ""))
+            # Find the member using the user ID
+            user = ctx.guild.get_member(user_id)
+            if user:
+                player = user.name
+            else:
+                await ctx.send("User not found.")
+                return
+
         if player in self.timezones:
             player_timezone = self.timezones[player]
             timezone = pytz.timezone(player_timezone)
-            current_time = datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S')
+            # Format time as Hour:Minutes Day/Month in 24-hour time
+            current_time = datetime.now(timezone).strftime('%H:%M %d/%m')
 
             await ctx.send(f"The current time for {player} in {player_timezone} is {current_time}.")
         else:
