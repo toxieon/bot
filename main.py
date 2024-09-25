@@ -4,13 +4,9 @@ import os
 import webserver
 
 # Load the bot token from environment variables
-# Make sure to set this variable before running the bot:
-# Windows: `set discordkey=YOUR_BOT_TOKEN`
-# macOS/Linux: `export discordkey=YOUR_BOT_TOKEN`
 DISCORD_TOKEN = os.environ.get('discordkey')
 
 # Configure bot intents
-# If you need privileged intents (e.g., members and presences), make sure they are enabled in the Developer Portal.
 intents = discord.Intents.default()  # Default intents
 intents.members = True  # Enable members intent if you need access to guild member updates
 intents.presences = False  # Disable presence intent if you don't need to track users' online statuses
@@ -29,6 +25,13 @@ COLOR_DICT = {
     'black': discord.Color.default(),
     'white': discord.Color.lighter_grey()
 }
+
+
+# Ping command to check bot status
+@bot.command(name="Ping")
+async def ping(ctx):
+    """Simple ping command to check if the bot is online."""
+    await ctx.send("ToxiBot Online")
 
 
 # Role creation command
