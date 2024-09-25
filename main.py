@@ -17,6 +17,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 async def load_commands():
     await bot.load_extension('commands.ping')
     await bot.load_extension('commands.role')
+    await bot.load_extension('commands.exportPFPs')
 
 @bot.event
 async def on_ready():
