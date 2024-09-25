@@ -19,6 +19,8 @@ async def load_commands():
     await bot.load_extension('commands.role')
     await bot.load_extension('commands.exportPFPs')
     await bot.load_extension('commands.write_contest')
+    await bot.load_extension('commands.timezone')
+
 
 @bot.event
 async def on_ready():
