@@ -4,60 +4,76 @@ from discord.ext import commands
 class RoleManager(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.color_options = {
-            '🔴': 'Red',
-            '🟢': 'Green',
-            '🔵': 'Blue',
-            # Add more colors as needed
-            '⬆️': 'More Options',  # For more options arrow
+        self.color_emojis = {
+            '🟥': discord.Color.red(),
+            '🟦': discord.Color.blue(),
+            '🟩': discord.Color.green(),
+            # Add more color emoji mappings here
+        }
+        self.expanded_color_emojis = {
+            '🟧': discord.Color.orange(),
+            '🟨': discord.Color.gold(),
+            '🟪': discord.Color.purple(),
+            '⬆️': 'expand_more',  # Arrow to show more options
+            # Add more emojis for more colors here
         }
 
     @commands.command(name="Role")
     async def create_role(self, ctx):
-        """Creates a role with a specified color."""
-
-        def check_author(message):
-            return message.author == ctx.author and message.channel == ctx.channel
-
+        """Create a new role with user-specified name and color."""
         await ctx.send("What would you like the Role name to be? Type 'cancel' at any time to cancel.")
-        role_name_msg = await self.bot.wait_for('message', check=check_author)
 
-        if role_name_msg.content.lower() == 'cancel':
-            await ctx.send("Role creation canceled.")
-            return
+        def check(m):
+            return m.author == ctx.author and m.channel == ctx.channel
 
-        role_name = role_name_msg.content
-
-        # Send the color prompt message
-        color_prompt = await ctx.send(f"Please select a color for {role_name} by reacting with one of the emojis below:")
-
-        # Add the reactions for the available colors
         try:
-            for emoji in self.color_options:
+            # Wait for the role name response
+            role_name_msg = await self.bot.wait_for('message', check=check)
+            role_name = role_name_msg.content
+
+            # If user types 'cancel'
+            if role_name.lower() == 'cancel':
+                await ctx.send("Role creation canceled.")
+                return
+
+            await ctx.send(f"Please select a color for {role_name} by reacting with one of the emojis below:")
+
+            # Send color prompt message
+            color_prompt = await ctx.send("React with your desired color below:")
+
+            # Initial reactions for colors
+            for emoji in self.color_emojis:
                 await color_prompt.add_reaction(emoji)
-        except discord.HTTPException as e:
-            await ctx.send(f"Error adding reactions: {e}")
-            return
 
-        # Wait for the user to select a reaction
-        def reaction_check(reaction, user):
-            return user == ctx.author and reaction.message.id == color_prompt.id and str(reaction.emoji) in self.color_options
+            def reaction_check(reaction, user):
+                return user == ctx.author and str(reaction.emoji) in self.color_emojis
 
-        reaction, user = await self.bot.wait_for('reaction_add', check=reaction_check)
+            reaction, _ = await self.bot.wait_for('reaction_add', check=reaction_check)
+            selected_color = self.color_emojis[str(reaction.emoji)]
 
-        if str(reaction.emoji) == '⬆️':
-            await ctx.send("You selected more options! (This would load more color choices here.)")
-            # Add more options if needed
-            return
+            # Check if the user selected the "expand_more" emoji for more colors
+            if str(reaction.emoji) == '⬆️':
+                await ctx.send("Expanding to show more colors...")
+                for emoji in self.expanded_color_emojis:
+                    await color_prompt.add_reaction(emoji)
 
-        selected_color = self.color_options[str(reaction.emoji)]
-        await ctx.send(f"Got it, new role {role_name} will be {selected_color}. Does this look correct? (yes/no)")
+                # Check again for additional reaction
+                reaction, _ = await self.bot.wait_for('reaction_add', check=reaction_check)
+                selected_color = self.expanded_color_emojis.get(str(reaction.emoji), selected_color)
 
-        # Confirmation for creating the role
-        confirmation_msg = await self.bot.wait_for('message', check=check_author)
+            # Ask user to confirm
+            await ctx.send(f"Got it! New role {role_name} will be {str(selected_color)}. Does this look correct? (yes/no)")
 
-        if confirmation_msg.content.lower() == 'yes':
-            await ctx.guild.create_role(name=role_name, colour=discord.Colour.from_str(selected_color.lower()))
-            await ctx.send(f"Role {role_name} with color {selected_color} created!")
-        else:
-            await ctx.send("Role creation canceled.")
+            confirm_msg = await self.bot.wait_for('message', check=check)
+            if confirm_msg.content.lower() == 'yes':
+                await ctx.guild.create_role(name=role_name, color=selected_color)
+                await ctx.send(f"Role '{role_name}' has been created!")
+            else:
+                await ctx.send("Role creation canceled.")
+
+        except Exception as e:
+            await ctx.send(f"An error occurred: {str(e)}")
+
+# Add the setup function to register the cog
+async def setup(bot):
+    await bot.add_cog(RoleManager(bot))

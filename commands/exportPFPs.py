@@ -5,13 +5,8 @@ import aiohttp
 import zipfile
 import shutil
 
-# Directory to save profile pictures
 PFP_DIRECTORY = "exported_pfps"
 ZIP_FILE = "pfps_export.zip"
-
-# Ensure the directory exists
-if not os.path.exists(PFP_DIRECTORY):
-    os.makedirs(PFP_DIRECTORY)
 
 class ExportPFPs(commands.Cog):
     def __init__(self, bot):
@@ -58,6 +53,6 @@ class ExportPFPs(commands.Cog):
         shutil.rmtree(PFP_DIRECTORY)
         os.remove(ZIP_FILE)
 
-# Setup function to properly add the cog
+# Add the setup function to register the cog
 async def setup(bot):
     await bot.add_cog(ExportPFPs(bot))
