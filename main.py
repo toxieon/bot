@@ -21,6 +21,7 @@ async def load_commands():
     await bot.load_extension('commands.write_contest')
     await bot.load_extension('commands.timezone')
     await bot.load_extension('commands.sc_teams')
+    await bot.load_extension('commands.voice_who')
 
 @bot.event
 async def on_ready():
