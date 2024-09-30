@@ -1,9 +1,13 @@
-import discord
 from discord.ext import commands
 
-# Define the Ping command
+class Ping(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name="ping")
+    async def ping(self, ctx):
+        """Check the bot's latency and display it."""
+        await ctx.send(f'ToxiBot Online. Latency: {round(self.bot.latency * 1000)}ms')
+
 async def setup(bot):
-    @bot.command(name="Ping")
-    async def ping(ctx):
-        """Simple ping command to check if the bot is online."""
-        await ctx.send("ToxiBot Online")
+    await bot.add_cog(Ping(bot))
