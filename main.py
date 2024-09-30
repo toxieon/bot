@@ -3,7 +3,6 @@ from discord.ext import commands
 import os
 import json
 import webserver
-from datetime import datetime
 
 DISCORD_TOKEN = os.environ.get('discordkey')
 
@@ -96,10 +95,6 @@ async def reload(ctx, extension: str):
         await ctx.send(f"Reloaded `{extension}` successfully!")
     except Exception as e:
         await ctx.send(f"Failed to reload `{extension}`: {str(e)}")
-
-# Short command aliases (for frequently used commands)
-bot.command(name="role", aliases=["r"])(lock)  # Alias for Role
-bot.command(name="SetTimezone", aliases=["tz"])(unlock)  # Alias for SetTimezone
 
 # Dynamic help command
 @bot.command(name="Thelp")
