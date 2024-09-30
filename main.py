@@ -4,6 +4,7 @@ import os
 import webserver
 
 DISCORD_TOKEN = os.environ.get('discordkey')
+GAME_NAME = os.environ.get('discordgame', 'StarCraft')  # Set a default game name
 
 # Configure bot intents
 intents = discord.Intents.default()
@@ -26,6 +27,11 @@ async def load_commands():
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
+
+    # Set the bot's game-playing activity
+    game = discord.Game(GAME_NAME)  # Use the game from the environment variable
+    await bot.change_presence(activity=game)  # Update the bot's status to "Playing {GAME_NAME}"
+
     await load_commands()
 
 # Custom Thelp command to show all available commands dynamically
