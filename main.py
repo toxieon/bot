@@ -17,12 +17,12 @@ bot = commands.Bot(command_prefix='!', intents=intents, case_insensitive=True)
 async def load_commands():
     extensions = [
         'commands.ping',
-        'commands.sc_teams',  # Updated with the correct directory name
+        'commands.sc_teams',  # Ensure sc_teams is correctly named
         'commands.role',
         'commands.exportPFPs',
         'commands.write_contest',
         'commands.timezone',
-        'commands.security'  # Add the new security commands here
+        'commands.security'
     ]
 
     for extension in extensions:
@@ -36,8 +36,8 @@ async def on_ready():
     print(f'{bot.user} has connected to Discord!')
     await load_commands()
 
-# Custom Thelp command to show all available commands dynamically
-@bot.command(name="help")
+# Custom command to show all available commands dynamically, renamed from help to avoid conflict
+@bot.command(name="show_commands")
 async def commands_list(ctx):
     """Shows all available commands dynamically."""
     command_list = [command.name for command in bot.commands]
