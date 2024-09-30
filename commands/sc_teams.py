@@ -2,40 +2,63 @@ import discord
 from discord.ext import commands
 import random
 
-class SCTeams(commands.Cog):
+
+class StarCraftTeams(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="scteams")
-    async def sc_teams(self, ctx, num_teams: int):
-        """Randomly divide people in voice channels into teams."""
-        # Check if the user is in a voice channel
-        if ctx.author.voice and ctx.author.voice.channel:
-            # Get the voice channel the user is in
-            voice_channel = ctx.author.voice.channel
-            members = voice_channel.members
+    # Command to create StarCraft teams based on members in voice channels
+    @commands.command(name="ScTeams")
+    async def sc_teams(self, ctx):
+        """Randomly create StarCraft teams from members in voice channels."""
 
-            if len(members) < num_teams:
-                await ctx.send("There are not enough people in the voice channel to make that many teams.")
-                return
+        # Get the voice channel the bot was pinged in, and check for connected members
+        voice_channel_members = []
+        for channel in ctx.guild.voice_channels:
+            voice_channel_members.extend(channel.members)
 
-            # Shuffle and divide members into teams
-            random.shuffle(members)
-            teams = [[] for _ in range(num_teams)]
+        if not voice_channel_members:
+            await ctx.send("There are no members currently in any voice channel.")
+            return
 
-            for i, member in enumerate(members):
-                teams[i % num_teams].append(member.display_name)
+        # Ask how many teams to create
+        await ctx.send("How many teams do you want to create? Please provide a number.")
 
-            # Display the teams
-            team_msg = ""
-            for i, team in enumerate(teams, start=1):
-                team_msg += f"**Team {i}:** {', '.join(team)}\n"
+        def check(msg):
+            return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.isdigit()
 
-            await ctx.send(f"Here are the randomly assigned teams:\n{team_msg}")
+        try:
+            # Wait for the response from the user
+            team_msg = await self.bot.wait_for("message", check=check, timeout=30.0)
+            num_teams = int(team_msg.content)
+        except Exception:
+            await ctx.send("You didn't provide a valid number in time. Command cancelled.")
+            return
 
-        else:
-            await ctx.send("You must be in a voice channel to use this command.")
+        # Ensure valid team numbers
+        if num_teams < 2:
+            await ctx.send("You need at least 2 teams.")
+            return
+        if num_teams > len(voice_channel_members):
+            await ctx.send(f"There are not enough members to form {num_teams} teams. Command cancelled.")
+            return
+
+        # Shuffle the members randomly
+        random.shuffle(voice_channel_members)
+
+        # Split members into teams
+        teams = [[] for _ in range(num_teams)]
+        for i, member in enumerate(voice_channel_members):
+            teams[i % num_teams].append(member)
+
+        # Format and display the teams
+        result = "Here are the randomly generated teams:\n"
+        for i, team in enumerate(teams, 1):
+            result += f"**Team {i}:** " + ", ".join([member.display_name for member in team]) + "\n"
+
+        await ctx.send(result)
 
 
+# Setup function to add the cog
 async def setup(bot):
-    await bot.add_cog(SCTeams(bot))
+    await bot.add_cog(StarCraftTeams(bot))
