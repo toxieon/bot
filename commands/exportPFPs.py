@@ -5,17 +5,17 @@ import aiohttp
 import zipfile
 import shutil
 
+# Directory to save profile pictures
 PFP_DIRECTORY = "exported_pfps"
-ZIP_FILE = "pfps_export.zip"
+ZIP_FILE_PREFIX = "pfps_export"
+MAX_DISCORD_FILE_SIZE = 8 * 1024 * 1024  # 8MB for standard Discord users
 
-class ExportPFPs(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @commands.command(name="exportPFPs")
+# Define the exportPFPs command
+async def setup(bot):
+    @bot.command(name="exportPFPs")
     @commands.has_permissions(administrator=True)
-    async def export_pfps(self, ctx):
-        """Exports profile pictures of all users in the server and provides a zip file for download."""
+    async def export_pfps(ctx):
+        """Exports profile pictures of all users in the server and provides them in multiple zip files if needed."""
         await ctx.send("Exporting profile pictures...")
 
         # Clear the directory if it already exists
@@ -34,25 +34,47 @@ class ExportPFPs(commands.Cog):
                         with open(file_name, 'wb') as file:
                             file.write(pfp_data)
 
-        # Zip the exported profile pictures
-        await ctx.send("Zipping the profile pictures...")
-        with zipfile.ZipFile(ZIP_FILE, 'w') as zipf:
+        # Zip the profile pictures in batches
+        await ctx.send("Zipping the profile pictures into multiple files if necessary...")
+
+        zip_file_count = 1
+        total_file_size = 0
+        current_zip_files = []
+        zip_file_path = f"{ZIP_FILE_PREFIX}_{zip_file_count}.zip"
+
+        with zipfile.ZipFile(zip_file_path, 'w') as zipf:
             for root, dirs, files in os.walk(PFP_DIRECTORY):
                 for file in files:
-                    zipf.write(os.path.join(root, file), file)
+                    file_path = os.path.join(root, file)
+                    file_size = os.path.getsize(file_path)
 
-        # Send the zip file to Discord (if size allows)
-        file_size = os.path.getsize(ZIP_FILE)
-        max_size = 8 * 1024 * 1024  # 8 MB for regular Discord uploads
-        if file_size < max_size:
-            await ctx.send("Here is the zip file with the exported profile pictures!", file=discord.File(ZIP_FILE))
-        else:
-            await ctx.send("The zip file is too large to upload directly to Discord. Please contact the server admin for the file.")
+                    # If adding this file would exceed the Discord limit, start a new zip file
+                    if total_file_size + file_size > MAX_DISCORD_FILE_SIZE:
+                        # Close the current zip file and start a new one
+                        zipf.close()
+                        current_zip_files.append(zip_file_path)
 
-        # Clean up
+                        # Send the current zip file
+                        await ctx.send(f"Here is the zip file #{zip_file_count} with exported profile pictures!", file=discord.File(zip_file_path))
+
+                        # Reset for the new zip file
+                        zip_file_count += 1
+                        zip_file_path = f"{ZIP_FILE_PREFIX}_{zip_file_count}.zip"
+                        zipf = zipfile.ZipFile(zip_file_path, 'w')
+                        total_file_size = 0
+
+                    # Add the current file to the zip
+                    zipf.write(file_path, file)
+                    total_file_size += file_size
+
+            # Close and save the last zip file
+            zipf.close()
+            current_zip_files.append(zip_file_path)
+
+            # Send the last zip file
+            await ctx.send(f"Here is the zip file #{zip_file_count} with exported profile pictures!", file=discord.File(zip_file_path))
+
+        # Clean up after sending the zip files
         shutil.rmtree(PFP_DIRECTORY)
-        os.remove(ZIP_FILE)
-
-# Add the setup function to register the cog
-async def setup(bot):
-    await bot.add_cog(ExportPFPs(bot))
+        for zip_file in current_zip_files:
+            os.remove(zip_file)
