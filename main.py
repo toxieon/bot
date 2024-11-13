@@ -38,6 +38,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 # Run the HTTP server on the port provided by the platform
 port = int(os.environ.get("PORT", 8080))
-httpd = HTTPServer(("", port), SimpleHTTPRequestHandler)
+httpd = HTTPServer(("0.0.0.0", port), SimpleHTTPRequestHandler)
 print(f"Starting HTTP server on port {port}")
 httpd.serve_forever()
