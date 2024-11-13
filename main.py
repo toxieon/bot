@@ -20,8 +20,8 @@ async def on_ready():
     print('------')
 
 # Run bot
-TOKEN = os.getenv('DISCORD_TOKEN')  # Ensure your token is set as an environment variable
+TOKEN = os.getenv('discordkey')  # Adjusted to match your environment variable
 if TOKEN:
     bot.run(TOKEN)
 else:
-    print("Error: DISCORD_TOKEN environment variable is not set.")
+    print("Error: discordkey environment variable is not set.")
