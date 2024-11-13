@@ -3,4 +3,5 @@ aiohttp~=3.7.4
 Flask~=3.0.3
 pytz~=2024.2
 gspread
+google-auth
 oauth2client
