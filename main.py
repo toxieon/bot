@@ -1,10 +1,12 @@
 import discord
 from discord.ext import commands
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
-# Define bot intents (customize as needed)
+# Define bot intents
 intents = discord.Intents.default()
-intents.message_content = True  # Enable this if the bot needs to read message content
+intents.message_content = True
 
 # Initialize bot with command prefix and intents
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -20,8 +22,22 @@ async def on_ready():
     print('------')
 
 # Run bot
-TOKEN = os.getenv('discordkey')  # Adjusted to match your environment variable
+TOKEN = os.getenv('discordkey')
 if TOKEN:
-    bot.run(TOKEN)
+    # Start the bot in a separate thread
+    threading.Thread(target=bot.run, args=(TOKEN,)).start()
 else:
     print("Error: discordkey environment variable is not set.")
+
+# Set up a basic HTTP server to keep the web service alive
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is running")
+
+# Run the HTTP server on the port provided by the platform
+port = int(os.environ.get("PORT", 8080))
+httpd = HTTPServer(("", port), SimpleHTTPRequestHandler)
+print(f"Starting HTTP server on port {port}")
+httpd.serve_forever()
