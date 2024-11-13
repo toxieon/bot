@@ -11,8 +11,10 @@ intents.message_content = True
 # Initialize bot with command prefix and intents
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# Load the scores_google_sheets Cog
-bot.load_extension("commands.scores_google_sheets")
+# Automatically load all cogs from the commands directory
+for filename in os.listdir('./commands'):
+    if filename.endswith('.py') and not filename.startswith('_'):
+        bot.load_extension(f'commands.{filename[:-3]}')
 
 # Event triggered when bot is ready
 @bot.event
@@ -21,10 +23,9 @@ async def on_ready():
     print(f'Bot ID: {bot.user.id}')
     print('------')
 
-# Run bot
+# Run bot in a separate thread
 TOKEN = os.getenv('discordkey')
 if TOKEN:
-    # Start the bot in a separate thread
     threading.Thread(target=bot.run, args=(TOKEN,)).start()
 else:
     print("Error: discordkey environment variable is not set.")
@@ -36,8 +37,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"Bot is running")
 
-# Run the HTTP server on the port provided by the platform
+# Run the HTTP server on the specified port
 port = int(os.environ.get("PORT", 8080))
-httpd = HTTPServer(("0.0.0.0", port), SimpleHTTPRequestHandler)
+httpd = HTTPServer(("0.0.0.0", port), SimpleHTTPRequestHandler)  # Bind to all interfaces
 print(f"Starting HTTP server on port {port}")
 httpd.serve_forever()
