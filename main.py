@@ -2,8 +2,12 @@ import discord
 from discord.ext import commands
 import os
 
-# Initialize bot with command prefix
-bot = commands.Bot(command_prefix='!')
+# Define bot intents (customize as needed)
+intents = discord.Intents.default()
+intents.message_content = True  # Enable this if the bot needs to read message content
+
+# Initialize bot with command prefix and intents
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 # Load the scores_google_sheets Cog
 bot.load_extension("commands.scores_google_sheets")
