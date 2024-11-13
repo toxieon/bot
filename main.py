@@ -17,12 +17,13 @@ bot = commands.Bot(command_prefix='!', intents=intents, case_insensitive=True)
 async def load_commands():
     extensions = [
         'commands.ping',
-        'commands.sc_teams',  # Ensure sc_teams is correctly named
+        'commands.sc_teams',      # Ensure sc_teams is correctly named
         'commands.role',
         'commands.exportPFPs',
         'commands.write_contest',
         'commands.timezone',
-        'commands.security'
+        'commands.security',
+        'commands.scores'         # Load the scores extension
     ]
 
     for extension in extensions:
