@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "linen-age-315510",
+  "private_key_id": "9044674cee3b46d1bd86f661321a41bb0e60eb41",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDn4rwgJpVdgmGa\n7nuNjc2WfTc2fdCOaEhTwVwvEHQcroMNNR1kEcGQifDT2cnDodhGbJPPfo7fd3PC\ntnxY9g5uXzn6fOyKTnT0drVCMgQvxOp4NghnbmJ/y2HDbHpv1nBX+4gTyylUnL+V\nwdwVlLsJ/UYV2HC3d89jKNqxs+am0M+NOB4cYbRb0vpTkaIGYbf9q4FBwCk+0PV8\ndAUHaLlneSgh6AmzgPzFqB6CbVs2mw6yrftCGSpv2sLRls9UMQ3KM3hz3cpS0YGe\nHvd3niSxz5cZ9BFx1vOIVWx9C8yHxpWy0GeY7uGigjNnV+YDtrNKWzL6qTGiLUT4\n+P4yGOBBAgMBAAECggEANYtQf2gJY29A1IKu+u+8gjxlrGp+5vNDiDuE6sU02o6d\nakZShBHpjVOczX5jrY3In/JgazBBE27ExzhWHECs8mWAwMtp30HglbZ3glKETvd8\nYMexRxjhG7s91t9Molh01owZTuDBqW0MfCsog781NUhLj63L0UGUHMSJQzFUWD48\nta4jMvRkKR/tixHJP2lwzEHMkmcLQvQvdQsTXiRCQw4dPG048OGnxJbIJy4PGLuX\n8+y74ShE6ZoMjKG8gyqoMEWRMGkLj8AUICPVIR2OePzQqIWlybmrih2efjUjE1Jt\nCsR7fMo/sLx0Z/JWuJhiep3BvomCvVIBT8V2wabrhQKBgQD3q3NccreKCG/cH5/I\nkl0I9QnybWDByH/LSbtTgMUO8gOx4DZ8o61PvhMQt0pWKHW8CQWnIk+8OVGgpJFP\nWLOa+79SJ663JsnRU5cLxdV+cMwTZz4FIHhzvnRi6RGwzsb6XcuyJocX5JQSqScD\ns2ToZ2MZWWLEsUXbtbb9S/PMuwKBgQDvr2Bbq6r1XilevXRsgaiNTpadoNWFpDz+\nQvx9EEvt3c+5cMPQl2dl8Q6NxM5uhG6yIbQbHegVFM3yreNKv0wysYfD4HRdtdbe\nhUzX1c4Ah27W/XXyEuNbtX3lOh8zpufze0q9TvyC5ShRoBVmasrUfsjc1+lhEYG2\n4VS8/ldVMwKBgFS4L0QGccYj0K/JmYywlGaF+5sT0y82eJB/bjbIK6BLJPxpp/nG\nu3g1mqvzJtiGCpABvg9H62KFcOi0oogz3Ww8hVuC+37nI84Y++gpCjiwOP7CKDL0\nwn9FPObAty517RajkxQjnb6MkCI5/oCDkxb0lq+LJgAGa9EWPbwziPgVAoGBAOyo\nKCc7YCi3WXe+7qZ4ezlS4GoxNMKowMR41Z6SqbXqrkC2c9GQvLouAqW+Lel3f2kI\n2DFyHQY7rYGxadwS+CSRn7Cq/ZrNgaPi0FXIOIfTMYC7cGqddbnGgNEFy2sPoLSL\nBufWhoKjy2SVAKxIQ47+xEsyMK/0PjSZVjbplsd7AoGBAIYS5gQv91gcn4DNd9Nl\nqP70vW5sqD7ToHDKYKWgU0eWE2pJ8T1AiBNoU/vu4iGOFBCZbITkR7IE4tPXF+YQ\nkLpk/Z28LIX1i/VixOq0lBkDVORIov/SDhSj/3jheCr6T5YzpiYCwQw2pYeuRJXV\nEqGkOLQuH79EFxt5/6giGcsG\n-----END PRIVATE KEY-----\n",
+  "client_email": "sc-tournament@linen-age-315510.iam.gserviceaccount.com",
+  "client_id": "110012379689111050098",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sc-tournament%40linen-age-315510.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
