@@ -1,44 +1,50 @@
 import discord
 from discord.ext import commands
 import os
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
 
-# Define bot intents
+DISCORD_TOKEN = os.environ.get('discordkey')
+
+# Configure bot intents
 intents = discord.Intents.default()
-intents.message_content = True
+intents.members = True
+intents.message_content = True  # Important: Enable this for handling commands
 
-# Initialize bot with command prefix and intents
-bot = commands.Bot(command_prefix='!', intents=intents)
+# Initialize the bot and make it case-insensitive
+bot = commands.Bot(command_prefix='!', intents=intents, case_insensitive=True)
 
-# Automatically load all cogs from the commands directory
-for filename in os.listdir('./commands'):
-    if filename.endswith('.py') and not filename.startswith('_'):
-        bot.load_extension(f'commands.{filename[:-3]}')
+# Load commands from external files
+async def load_commands():
+    extensions = [
+        'commands.ping',
+        'commands.sc_teams',  # Ensure sc_teams is correctly named
+        'commands.role',
+        'commands.exportPFPs',
+        'commands.write_contest',
+        'commands.timezone',
+        'commands.security',
+        'commands.scour'  # Add the scour command
+    ]
 
-# Event triggered when bot is ready
+    for extension in extensions:
+        try:
+            await bot.load_extension(extension)
+        except Exception as e:
+            print(f"Failed to load extension {extension}: {e}")
+
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name}')
-    print(f'Bot ID: {bot.user.id}')
-    print('------')
+    print(f'{bot.user} has connected to Discord!')
+    await load_commands()
 
-# Run bot in a separate thread
-TOKEN = os.getenv('discordkey')
-if TOKEN:
-    threading.Thread(target=bot.run, args=(TOKEN,)).start()
-else:
-    print("Error: discordkey environment variable is not set.")
+# Custom command to show all available commands dynamically, renamed from help to avoid conflict
+@bot.command(name="show_commands")
+async def commands_list(ctx):
+    """Shows all available commands dynamically."""
+    command_list = [command.name for command in bot.commands]
+    commands_str = "\n".join([f"• {cmd}" for cmd in command_list])
+    await ctx.send(f"Here are all available commands:\n{commands_str}")
 
-# Set up a basic HTTP server to keep the web service alive
-class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is running")
-
-# Run the HTTP server on the specified port
-port = int(os.environ.get("PORT", 8080))
-httpd = HTTPServer(("0.0.0.0", port), SimpleHTTPRequestHandler)  # Bind to all interfaces
-print(f"Starting HTTP server on port {port}")
-httpd.serve_forever()
+# Run the bot
+if not DISCORD_TOKEN:
+    raise RuntimeError("Error: 'discordkey' environment variable is not set.")
+bot.run(DISCORD_TOKEN)
